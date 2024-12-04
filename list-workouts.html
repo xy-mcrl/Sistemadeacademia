@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Listar Treinos</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-image: url('image/listar\ treino.png'); /* Substitua pelo link da sua imagem */
+            background-size: cover; /* Faz a imagem cobrir toda a área */
+            background-position: center; /* Centraliza a imagem */
+            margin: 0;
+            padding: 20px;
+            color: #333; /* Texto em um tom mais escuro para melhor legibilidade */
+        }
+
+        #app {
+            max-width: 800px; /* Aumentando a largura máxima para uma melhor apresentação */
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.9); /* Fundo branco com transparência */
+            border-radius: 12px; /* Bordas mais arredondadas */
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1); /* Sombra mais suave */
+            padding: 30px;
+        }
+
+        h1 {
+            color: #e61717;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 28px; /* Aumentando o tamanho da fonte do título */
+            font-weight: bold; /* Negrito para o título */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 12px; /* Bordas arredondadas para a tabela */
+            overflow: hidden; /* Para esconder bordas arredondadas */
+        }
+
+        th, td {
+            padding: 15px; /* Aumentando o padding das células */
+            text-align: left;
+            border: 1px solid #ddd;
+            transition: background-color 0.3s; /* Transição suave */
+        }
+
+        th {
+            background-color: #e61717;
+            color: white;
+            font-weight: bold; /* Negrito para os cabeçalhos */
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9; /* Um fundo suave para linhas pares */
+        }
+
+        tr:hover {
+            background-color: #e0e0e0; /* Efeito ao passar o mouse sobre as linhas */
+        }
+
+        button {
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            padding: 10px 15px; /* Aumentando o padding dos botões */
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 14px; /* Tamanho da fonte do botão */
+        }
+
+        button:hover {
+            background-color: #c9302c; /* Efeito de hover nos botões */
+        }
+
+        .back-button {
+            display: block;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e61717;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 16px; /* Aumentando o tamanho da fonte */
+        }
+
+        .back-button:hover {
+            background-color: #c9302c; /* Efeito de hover no botão de voltar */
+        }
+
+        /* Estilos para mensagens sem treinos */
+        .no-workouts {
+            text-align: center;
+            color: #888;
+            font-style: italic;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1>Listar Treinos</h1>
+        <table id="workout-table">
+            <thead>
+                <tr>
+                    <th>Aluno</th>
+                    <th>Título</th>
+                    <th>Séries</th>
+                    <th>Repetições</th>
+                    <th>Descrição</th>
+                    <th>Exercícios</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody id="workout-list"></tbody>
+        </table>
+        <button class="back-button" onclick="window.history.back()">Voltar</button>
+        <div id="no-workouts" class="no-workouts" style="display: none;">Nenhum treino cadastrado.</div>
+    </div>
+
+    <script>
+        function loadWorkouts() {
+            const workoutList = document.getElementById('workout-list');
+            workoutList.innerHTML = ''; // Limpa a lista antes de carregar
+
+            const workouts = JSON.parse(localStorage.getItem('workouts')) || [];
+
+            workouts.forEach((workout, index) => {
+                const exercisesList = workout.exercises.map(ex => `${ex.exercise}`).join(', ');
+                const setsList = workout.exercises.map(ex => `${ex.sets}`).join(', ');
+                const repsList = workout.exercises.map(ex => `${ex.repetitions}`).join(', ');
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${workout.studentName}</strong></td>
+                    <td>${workout.title}</td>
+                    <td>${setsList}</td>
+                    <td>${repsList}</td>
+                    <td>${workout.description}</td>
+                    <td>${exercisesList}</td>
+                    <td><button onclick="deleteWorkout(${index})">Excluir</button></td>
+                `;
+                workoutList.appendChild(row);
+            });
+
+            // Exibir mensagem se não houver treinos
+            const noWorkoutsMessage = document.getElementById('no-workouts');
+            if (workouts.length === 0) {
+                noWorkoutsMessage.style.display = 'block';
+            } else {
+                noWorkoutsMessage.style.display = 'none';
+            }
+        }
+
+        function deleteWorkout(index) {
+            const workouts = JSON.parse(localStorage.getItem('workouts')) || [];
+            workouts.splice(index, 1);
+            localStorage.setItem('workouts', JSON.stringify(workouts));
+            alert("Treino excluído!");
+            loadWorkouts();
+        }
+
+        window.onload = loadWorkouts;
+    </script>
+</body>
+</html>
